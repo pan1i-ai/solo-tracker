@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-title" content="SOLO">
 <title>SOLO</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root{
   --bg:#0b0b0d;
@@ -17,14 +19,18 @@
   --text:#f6f6f7;
   --muted:#92929b;
   --accent:#d8ff3e;
+  --danger:#ff6666;
 }
+
 *{box-sizing:border-box}
+
 body{
   margin:0;
   background:var(--bg);
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;
 }
+
 .app{
   max-width:650px;
   margin:auto;
@@ -32,42 +38,82 @@ body{
   padding:calc(24px + env(safe-area-inset-top)) 16px
           calc(100px + env(safe-area-inset-bottom));
 }
+
 .header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  align-items:flex-start;
+  gap:12px;
   margin-bottom:18px;
 }
+
 .logo{
   color:var(--accent);
   font-weight:900;
   letter-spacing:.18em;
   font-size:13px;
 }
-h1{margin:4px 0 0;font-size:28px}
+
+h1{
+  margin:4px 0 0;
+  font-size:28px;
+}
+
 h2{font-size:23px}
+
 .muted{color:var(--muted)}
+
+.cloudline{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:11px;
+  color:var(--muted);
+  justify-content:flex-end;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#777;
+}
+
+.dot.ok{background:var(--accent)}
+
+.ghost{
+  background:none;
+  border:0;
+  color:var(--muted);
+  padding:8px 0;
+  font-size:12px;
+}
+
 .card{
   background:var(--card);
   border:1px solid var(--line);
   border-radius:24px;
   padding:18px;
 }
+
 .hero{
   display:flex;
   justify-content:space-between;
   align-items:center;
   min-height:165px;
 }
+
 .weight{
   font-size:48px;
   font-weight:900;
   letter-spacing:-.05em;
 }
+
 .weight span{
   font-size:19px;
   color:var(--muted);
 }
+
 .goal{
   width:105px;
   height:105px;
@@ -78,30 +124,37 @@ h2{font-size:23px}
   align-items:center;
   justify-content:center;
 }
+
 .goal b{font-size:25px}
+
 .goal small{
   color:var(--muted);
   text-align:center;
   width:65px;
 }
+
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
   margin:10px 0;
 }
+
 .metric{
   background:var(--card);
   border:1px solid var(--line);
   padding:15px;
   border-radius:18px;
 }
+
 .metric small{
   color:var(--muted);
   display:block;
   margin-bottom:6px;
 }
+
 .metric b{font-size:17px}
+
 .btn{
   width:100%;
   border:0;
@@ -112,17 +165,20 @@ h2{font-size:23px}
   font-weight:900;
   font-size:16px;
 }
+
 .secondary{
   background:var(--card2);
   color:var(--text);
   border:1px solid var(--line);
 }
+
 .section-title{
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin:24px 2px 10px;
 }
+
 .badge{
   background:#272c19;
   color:var(--accent);
@@ -130,6 +186,7 @@ h2{font-size:23px}
   border-radius:999px;
   font-size:12px;
 }
+
 .row{
   display:flex;
   justify-content:space-between;
@@ -137,38 +194,49 @@ h2{font-size:23px}
   padding:15px 0;
   border-bottom:1px solid var(--line);
 }
+
 .row:last-child{border:0}
+
 .row small{
   display:block;
   color:var(--muted);
   margin-top:4px;
 }
+
 .screen{display:none}
 .screen.active{display:block}
 
-.history-item{
-  margin-bottom:10px;
-}
+.history-item{margin-bottom:10px}
+
 .stats{
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
   gap:7px;
   margin-top:12px;
 }
+
 .stats div{
   background:var(--card2);
   border-radius:12px;
   padding:9px;
 }
+
 .stats small{
   display:block;
   color:var(--muted);
   font-size:10px;
 }
+
 .report{
   white-space:pre-wrap;
   line-height:1.5;
   font-size:14px;
+}
+
+.report-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
 
 nav{
@@ -183,7 +251,9 @@ nav{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  z-index:5;
 }
+
 nav button{
   background:none;
   border:0;
@@ -193,6 +263,7 @@ nav button{
   align-items:center;
   font-size:11px;
 }
+
 nav button span{font-size:22px}
 nav button.active{color:var(--accent)}
 
@@ -205,14 +276,17 @@ dialog{
   color:var(--text);
   padding:20px;
 }
+
 dialog::backdrop{
   background:rgba(0,0,0,.75);
 }
+
 label{
   display:block;
   color:var(--muted);
   font-size:12px;
 }
+
 input,textarea{
   width:100%;
   padding:13px;
@@ -221,17 +295,26 @@ input,textarea{
   color:white;
   border:1px solid var(--line);
   border-radius:13px;
+  font-size:16px;
 }
+
+textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
 .formgrid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:9px;
 }
+
 .sets{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:6px;
 }
+
 .close{
   float:right;
   background:none;
@@ -239,36 +322,167 @@ input,textarea{
   border:0;
   font-size:25px;
 }
+
+.authGate{
+  position:fixed;
+  inset:0;
+  background:var(--bg);
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+}
+
+.authGate.hidden{display:none}
+
+.authCard{
+  width:min(430px,100%);
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:28px;
+  padding:22px;
+}
+
+.authCard h2{
+  margin:8px 0 4px;
+}
+
+.authCard p{margin-top:0}
+
+.authBtns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.authMsg{
+  font-size:13px;
+  line-height:1.4;
+  margin-top:12px;
+  color:var(--muted);
+  min-height:18px;
+}
+
+.spinner{
+  opacity:.6;
+  pointer-events:none;
+}
 </style>
 </head>
 
 <body>
 
+<div id="authGate" class="authGate">
+  <div class="authCard">
+
+    <div class="logo">SOLO CLOUD</div>
+
+    <h2>Вход в трекер</h2>
+
+    <p class="muted">
+      Один аккаунт — данные сохраняются в облаке
+      и доступны на других устройствах.
+    </p>
+
+    <label>
+      Email
+      <input
+        id="authEmail"
+        type="email"
+        autocomplete="email"
+        placeholder="you@example.com">
+    </label>
+
+    <br>
+
+    <label>
+      Пароль
+      <input
+        id="authPassword"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Минимум 6 символов">
+    </label>
+
+    <div class="authBtns">
+
+      <button
+        id="loginBtn"
+        class="btn"
+        type="button"
+        onclick="signIn()">
+        Войти
+      </button>
+
+      <button
+        id="signupBtn"
+        class="btn secondary"
+        type="button"
+        onclick="signUp()">
+        Регистрация
+      </button>
+
+    </div>
+
+    <div id="authMsg" class="authMsg"></div>
+
+  </div>
+</div>
+
+
 <div class="app">
 
 <div class="header">
+
   <div>
     <div class="logo">SOLO</div>
     <h1>Трекер прогресса</h1>
   </div>
+
+  <div>
+
+    <div class="cloudline">
+      <span id="cloudDot" class="dot"></span>
+      <span id="cloudText">Локально</span>
+    </div>
+
+    <button class="ghost" onclick="signOut()">
+      Выйти
+    </button>
+
+  </div>
+
 </div>
+
 
 <section id="today" class="screen active">
 
 <div class="card hero">
+
   <div>
     <div class="muted">Сегодня</div>
-    <div class="weight" id="weightMain">85.0 <span>кг</span></div>
-    <small class="muted" id="deltaMain">Стартовая точка</small>
+
+    <div class="weight" id="weightMain">
+      85.0 <span>кг</span>
+    </div>
+
+    <small class="muted" id="deltaMain">
+      Стартовая точка
+    </small>
   </div>
 
   <div class="goal">
     <b id="remain">5.0</b>
     <small>кг до цели</small>
   </div>
+
 </div>
 
+
 <div class="grid">
+
   <div class="metric">
     <small>Калории</small>
     <b id="calMetric">0 / 2100</b>
@@ -288,39 +502,65 @@ input,textarea{
     <small>Кардио</small>
     <b id="cardioMetric">0 мин</b>
   </div>
+
 </div>
 
-<button class="btn" onclick="openForm()">Записать день</button>
+
+<button class="btn" onclick="openForm()">
+  Записать день
+</button>
+
 
 <div class="section-title">
+
   <h2>Тренировка</h2>
-  <span class="badge">дом</span>
+
+  <span id="dayBadge" class="badge">
+    план
+  </span>
+
 </div>
 
+
 <div class="card">
+
   <div class="row">
+
     <div>
       <b>Отжимания</b>
       <small>4 подхода</small>
     </div>
+
     <b id="pushToday">—</b>
+
   </div>
 
+
   <div class="row">
+
     <div>
       <b>Приседания</b>
       <small>4 подхода</small>
     </div>
+
     <b id="squatToday">—</b>
+
   </div>
 
+
   <div class="row">
+
     <div>
       <b>Кардио</b>
-      <small>ходьба / велосипед</small>
+      <small id="cardioPlanText">
+        ходьба / велосипед
+      </small>
     </div>
+
     <b id="cardioToday">—</b>
+
   </div>
+
 </div>
 
 </section>
@@ -329,43 +569,46 @@ input,textarea{
 <section id="progress" class="screen">
 
 <div class="section-title">
+
   <div>
     <div class="logo">ПРОГРЕСС</div>
     <h2>Последние 7 дней</h2>
   </div>
+
 </div>
+
 
 <div class="card">
 
-<div class="row">
-  <span class="muted">Изменение веса</span>
-  <b id="weekDelta">—</b>
-</div>
+  <div class="row">
+    <span class="muted">Изменение веса</span>
+    <b id="weekDelta">—</b>
+  </div>
 
-<div class="row">
-  <span class="muted">Средние калории</span>
-  <b id="avgCal">—</b>
-</div>
+  <div class="row">
+    <span class="muted">Средние калории</span>
+    <b id="avgCal">—</b>
+  </div>
 
-<div class="row">
-  <span class="muted">Тренировочных дней</span>
-  <b id="trainDays">0</b>
-</div>
+  <div class="row">
+    <span class="muted">Тренировочных дней</span>
+    <b id="trainDays">0</b>
+  </div>
 
-<div class="row">
-  <span class="muted">Кардио</span>
-  <b id="totalCardio">0 мин</b>
-</div>
+  <div class="row">
+    <span class="muted">Кардио</span>
+    <b id="totalCardio">0 мин</b>
+  </div>
 
-<div class="row">
-  <span class="muted">Лучшие отжимания</span>
-  <b id="bestPush">0</b>
-</div>
+  <div class="row">
+    <span class="muted">Лучшие отжимания</span>
+    <b id="bestPush">0</b>
+  </div>
 
-<div class="row">
-  <span class="muted">Лучшие приседания</span>
-  <b id="bestSquat">0</b>
-</div>
+  <div class="row">
+    <span class="muted">Лучшие приседания</span>
+    <b id="bestSquat">0</b>
+  </div>
 
 </div>
 
@@ -375,10 +618,12 @@ input,textarea{
 <section id="history" class="screen">
 
 <div class="section-title">
+
   <div>
     <div class="logo">ИСТОРИЯ</div>
     <h2>Записи</h2>
   </div>
+
 </div>
 
 <div id="historyList"></div>
@@ -389,29 +634,61 @@ input,textarea{
 <section id="ai" class="screen">
 
 <div class="section-title">
+
   <div>
     <div class="logo">ИИ</div>
     <h2>Отчёт недели</h2>
   </div>
+
 </div>
 
+
 <div class="card">
+
   <p class="muted">
-    Создаёт готовый текст с твоими показателями.
-    Его можно отправить мне в ChatGPT.
+    Формирует сводку по облачным данным.
+    Её можно отправить в ChatGPT.
   </p>
 
   <br>
 
-  <button class="btn" onclick="makeReport()">Сформировать отчёт</button>
+  <button class="btn" onclick="makeReport()">
+    Сформировать отчёт
+  </button>
+
 </div>
 
 <br>
 
-<div class="card" id="reportBox" style="display:none">
-  <div class="report" id="report"></div>
+
+<div
+  class="card"
+  id="reportBox"
+  style="display:none">
+
+  <div
+    class="report"
+    id="report">
+  </div>
+
   <br>
-  <button class="btn secondary" onclick="copyReport()">Скопировать</button>
+
+  <div class="report-actions">
+
+    <button
+      class="btn secondary"
+      onclick="copyReport()">
+      Скопировать
+    </button>
+
+    <button
+      class="btn secondary"
+      onclick="shareReport()">
+      Поделиться
+    </button>
+
+  </div>
+
 </div>
 
 </section>
@@ -420,30 +697,44 @@ input,textarea{
 
 
 <nav>
-<button class="active" onclick="tab('today',this)">
-<span>⌂</span>Сегодня
+
+<button
+  class="active"
+  onclick="tab('today',this)">
+  <span>⌂</span>
+  Сегодня
 </button>
 
 <button onclick="tab('progress',this)">
-<span>↗</span>Прогресс
+  <span>↗</span>
+  Прогресс
 </button>
 
 <button onclick="tab('history',this)">
-<span>≡</span>История
+  <span>≡</span>
+  История
 </button>
 
 <button onclick="tab('ai',this)">
-<span>✦</span>ИИ
+  <span>✦</span>
+  ИИ
 </button>
+
 </nav>
 
 
 <dialog id="formDialog">
 
-<button class="close" onclick="formDialog.close()">×</button>
+<button
+  class="close"
+  onclick="$('formDialog').close()">
+  ×
+</button>
 
 <h2>Сегодня</h2>
+
 <br>
+
 
 <form id="dayForm">
 
@@ -451,71 +742,104 @@ input,textarea{
 
 <label>
 Вес
-<input id="weight" type="number" step=".1">
+<input
+  id="weight"
+  type="number"
+  step=".1">
 </label>
 
 <label>
 Калории
-<input id="calories" type="number">
+<input
+  id="calories"
+  type="number">
 </label>
 
 <label>
 Белок
-<input id="protein" type="number">
+<input
+  id="protein"
+  type="number">
 </label>
 
 <label>
 Энергетики
-<input id="drinks" type="number">
+<input
+  id="drinks"
+  type="number">
 </label>
 
 <label>
 Вода, л
-<input id="water" type="number" step=".1">
+<input
+  id="water"
+  type="number"
+  step=".1">
 </label>
 
 <label>
 Кардио, мин
-<input id="cardio" type="number">
+<input
+  id="cardio"
+  type="number">
 </label>
 
 </div>
 
 <br>
 
+
 <b>Отжимания</b>
+
 <div class="sets">
+
 <input id="p1" type="number">
 <input id="p2" type="number">
 <input id="p3" type="number">
 <input id="p4" type="number">
+
 </div>
 
 <br>
 
+
 <b>Приседания</b>
+
 <div class="sets">
+
 <input id="s1" type="number">
 <input id="s2" type="number">
 <input id="s3" type="number">
 <input id="s4" type="number">
+
 </div>
 
 <br>
 
+
 <label>
 Настроение 1–5
-<input id="mood" type="number" min="1" max="5">
+<input
+  id="mood"
+  type="number"
+  min="1"
+  max="5">
 </label>
 
 <br>
+
 
 <label>
 Энергия 1–5
-<input id="energy" type="number" min="1" max="5">
+<input
+  id="energy"
+  type="number"
+  min="1"
+  max="5">
 </label>
 
 <br>
+
 
 <label>
 Заметка
@@ -524,7 +848,12 @@ input,textarea{
 
 <br>
 
-<button class="btn">Сохранить</button>
+
+<button
+  id="saveBtn"
+  class="btn">
+  Сохранить
+</button>
 
 </form>
 
@@ -533,305 +862,1442 @@ input,textarea{
 
 <script>
 
-const START=85;
-const GOAL=80;
-const CAL_GOAL=2100;
-const PROTEIN_GOAL=130;
+const SUPABASE_URL =
+'https://uxogvikvlqemyletowfc.supabase.co';
 
-let logs=JSON.parse(localStorage.getItem("solo_logs")||"[]");
+const SUPABASE_KEY =
+'sb_publishable_Osjd2rvBr2l3ogBLndVzhQ_vD3kcnfj';
 
-const $=id=>document.getElementById(id);
+const db =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-const sum=a=>(a||[]).reduce((x,y)=>x+(+y||0),0);
+const START = 85;
+const GOAL = 80;
+const CAL_GOAL = 2100;
+const PROTEIN_GOAL = 130;
 
-function today(){
- return new Date().toLocaleDateString("en-CA");
+const $ = id =>
+document.getElementById(id);
+
+const sum = a =>
+(a || []).reduce(
+  (x,y) => x + (+y || 0),
+  0
+);
+
+let logs = [];
+let currentUser = null;
+let syncing = false;
+
+
+function localDate(){
+
+  const d = new Date();
+
+  const p = n =>
+  String(n).padStart(2,'0');
+
+  return (
+    d.getFullYear() +
+    '-' +
+    p(d.getMonth()+1) +
+    '-' +
+    p(d.getDate())
+  );
+
 }
+
 
 function todayLog(){
- return logs.find(x=>x.date===today());
+
+  return logs.find(
+    x => x.date === localDate()
+  );
+
 }
+
 
 function latest(){
- return [...logs].sort((a,b)=>a.date.localeCompare(b.date)).at(-1);
+
+  return [...logs]
+  .sort(
+    (a,b) =>
+    a.date.localeCompare(b.date)
+  )
+  .at(-1);
+
 }
+
 
 function currentWeight(){
- return latest()?.weight||START;
-}
 
-function tab(id,btn){
-
- document.querySelectorAll(".screen")
- .forEach(x=>x.classList.remove("active"));
-
- $(id).classList.add("active");
-
- document.querySelectorAll("nav button")
- .forEach(x=>x.classList.remove("active"));
-
- btn.classList.add("active");
-
- render();
+  return latest()?.weight || START;
 
 }
+
+
+function cacheKey(){
+
+  return currentUser
+  ? `solo_logs_${currentUser.id}`
+  : 'solo_logs';
+
+}
+
+
+function saveCache(){
+
+  localStorage.setItem(
+    cacheKey(),
+    JSON.stringify(logs)
+  );
+
+}
+
+
+function loadCacheForUser(){
+
+  const own =
+  JSON.parse(
+    localStorage.getItem(
+      cacheKey()
+    ) || '[]'
+  );
+
+  logs =
+  Array.isArray(own)
+  ? own
+  : [];
+
+}
+
+
+function authMessage(
+  msg,
+  isError = false
+){
+
+  $('authMsg').textContent =
+  msg;
+
+  $('authMsg').style.color =
+  isError
+  ? 'var(--danger)'
+  : 'var(--muted)';
+
+}
+
+
+function setAuthBusy(v){
+
+  $('loginBtn').disabled = v;
+  $('signupBtn').disabled = v;
+
+  $('authGate')
+  .classList
+  .toggle(
+    'spinner',
+    v
+  );
+
+}
+
+
+function cloudStatus(
+  text,
+  ok = true
+){
+
+  $('cloudText').textContent =
+  text;
+
+  $('cloudDot')
+  .classList
+  .toggle(
+    'ok',
+    ok
+  );
+
+}
+
+
+function normalizeArray(a){
+
+  return Array.isArray(a)
+  ? [0,1,2,3].map(
+      i => +a[i] || 0
+    )
+  : [0,0,0,0];
+
+}
+
+
+function fromRow(r){
+
+  return {
+
+    date:
+    r.log_date,
+
+    weight:
+    r.weight === null
+    ? null
+    : Number(r.weight),
+
+    calories:
+    +r.calories || 0,
+
+    protein:
+    +r.protein || 0,
+
+    drinks:
+    +r.drinks || 0,
+
+    water:
+    +r.water || 0,
+
+    cardio:
+    +r.cardio || 0,
+
+    pushups:
+    normalizeArray(
+      r.pushups
+    ),
+
+    squats:
+    normalizeArray(
+      r.squats
+    ),
+
+    mood:
+    +r.mood || 0,
+
+    energy:
+    +r.energy || 0,
+
+    note:
+    r.note || ''
+
+  };
+
+}
+
+
+function toRow(l){
+
+  return {
+
+    user_id:
+    currentUser.id,
+
+    log_date:
+    l.date,
+
+    weight:
+    l.weight,
+
+    calories:
+    l.calories || 0,
+
+    protein:
+    l.protein || 0,
+
+    drinks:
+    l.drinks || 0,
+
+    water:
+    l.water || 0,
+
+    cardio:
+    l.cardio || 0,
+
+    pushups:
+    normalizeArray(
+      l.pushups
+    ),
+
+    squats:
+    normalizeArray(
+      l.squats
+    ),
+
+    mood:
+    l.mood || null,
+
+    energy:
+    l.energy || null,
+
+    note:
+    l.note || ''
+
+  };
+
+}
+
+
+async function signUp(){
+
+  const email =
+  $('authEmail')
+  .value
+  .trim();
+
+  const password =
+  $('authPassword')
+  .value;
+
+  if(
+    !email ||
+    password.length < 6
+  ){
+
+    authMessage(
+      'Укажи email и пароль минимум из 6 символов.',
+      true
+    );
+
+    return;
+
+  }
+
+
+  setAuthBusy(true);
+
+  authMessage(
+    'Создаю аккаунт…'
+  );
+
+
+  const {
+    data,
+    error
+  } =
+  await db.auth.signUp({
+    email,
+    password
+  });
+
+
+  setAuthBusy(false);
+
+
+  if(error){
+
+    authMessage(
+      error.message,
+      true
+    );
+
+    return;
+
+  }
+
+
+  if(data.session){
+
+    currentUser =
+    data.user;
+
+    await afterLogin();
+
+    return;
+
+  }
+
+
+  authMessage(
+    'Аккаунт создан. Открой письмо Supabase и подтверди email. Если после ссылки откроется пустая или localhost-страница — это нормально: вернись в SOLO и нажми «Войти».'
+  );
+
+}
+
+
+async function signIn(){
+
+  const email =
+  $('authEmail')
+  .value
+  .trim();
+
+  const password =
+  $('authPassword')
+  .value;
+
+
+  if(
+    !email ||
+    !password
+  ){
+
+    authMessage(
+      'Введи email и пароль.',
+      true
+    );
+
+    return;
+
+  }
+
+
+  setAuthBusy(true);
+
+  authMessage(
+    'Вхожу…'
+  );
+
+
+  const {
+    data,
+    error
+  } =
+  await db.auth
+  .signInWithPassword({
+    email,
+    password
+  });
+
+
+  setAuthBusy(false);
+
+
+  if(error){
+
+    authMessage(
+      error.message,
+      true
+    );
+
+    return;
+
+  }
+
+
+  currentUser =
+  data.user;
+
+  await afterLogin();
+
+}
+
+
+async function signOut(){
+
+  await db.auth.signOut();
+
+  currentUser = null;
+
+  logs = [];
+
+  render();
+
+  cloudStatus(
+    'Не выполнен вход',
+    false
+  );
+
+  $('authGate')
+  .classList
+  .remove('hidden');
+
+  authMessage('');
+
+}
+
+
+async function afterLogin(){
+
+  $('authGate')
+  .classList
+  .add('hidden');
+
+  cloudStatus(
+    'Синхронизация…',
+    false
+  );
+
+  loadCacheForUser();
+
+  render();
+
+  await syncCloud();
+
+}
+
+
+async function syncCloud(){
+
+  if(
+    !currentUser ||
+    syncing
+  ) return;
+
+
+  syncing = true;
+
+
+  try{
+
+
+    const legacy =
+    JSON.parse(
+      localStorage
+      .getItem(
+        'solo_logs'
+      ) || '[]'
+    );
+
+
+    const pending =
+    JSON.parse(
+      localStorage
+      .getItem(
+        `solo_pending_${currentUser.id}`
+      ) || '[]'
+    );
+
+
+    if(
+      Array.isArray(pending) &&
+      pending.length
+    ){
+
+      const pendingRows =
+      pending
+      .map(
+        d =>
+        logs.find(
+          x => x.date === d
+        )
+      )
+      .filter(Boolean)
+      .map(toRow);
+
+
+      if(pendingRows.length){
+
+        const {
+          error
+        } =
+        await db
+        .from('daily_logs')
+        .upsert(
+          pendingRows,
+          {
+            onConflict:
+            'user_id,log_date'
+          }
+        );
+
+
+        if(!error){
+
+          localStorage
+          .removeItem(
+            `solo_pending_${currentUser.id}`
+          );
+
+        }
+
+      }
+
+    }
+
+
+    let {
+      data,
+      error
+    } =
+    await db
+    .from('daily_logs')
+    .select('*')
+    .order(
+      'log_date',
+      {
+        ascending:true
+      }
+    );
+
+
+    if(error)
+    throw error;
+
+
+    if(
+      localStorage.getItem(
+        `solo_migrated_${currentUser.id}`
+      ) !== '1'
+      &&
+      Array.isArray(legacy)
+      &&
+      legacy.length
+    ){
+
+      const cloudDates =
+      new Set(
+        (data || [])
+        .map(
+          x => x.log_date
+        )
+      );
+
+
+      const missing =
+      legacy
+      .filter(
+        x =>
+        x?.date &&
+        !cloudDates.has(
+          x.date
+        )
+      )
+      .map(toRow);
+
+
+      if(missing.length){
+
+        const res =
+        await db
+        .from('daily_logs')
+        .insert(missing);
+
+
+        if(res.error)
+        throw res.error;
+
+      }
+
+
+      localStorage
+      .setItem(
+        `solo_migrated_${currentUser.id}`,
+        '1'
+      );
+
+
+      localStorage
+      .removeItem(
+        'solo_logs'
+      );
+
+
+      const refreshed =
+      await db
+      .from('daily_logs')
+      .select('*')
+      .order(
+        'log_date',
+        {
+          ascending:true
+        }
+      );
+
+
+      if(refreshed.error)
+      throw refreshed.error;
+
+
+      data =
+      refreshed.data;
+
+    }
+
+
+    logs =
+    (data || [])
+    .map(fromRow);
+
+
+    saveCache();
+
+    render();
+
+
+    cloudStatus(
+      'Облако подключено',
+      true
+    );
+
+
+  }catch(e){
+
+    console.error(e);
+
+    cloudStatus(
+      'Ошибка синхронизации',
+      false
+    );
+
+  }finally{
+
+    syncing = false;
+
+  }
+
+}
+
+
+function markPending(date){
+
+  const key =
+  `solo_pending_${currentUser.id}`;
+
+
+  const arr =
+  JSON.parse(
+    localStorage
+    .getItem(key) || '[]'
+  );
+
+
+  if(
+    !arr.includes(date)
+  ){
+
+    arr.push(date);
+
+  }
+
+
+  localStorage
+  .setItem(
+    key,
+    JSON.stringify(arr)
+  );
+
+}
+
+
+async function saveRemote(log){
+
+  if(!currentUser)
+  return false;
+
+
+  cloudStatus(
+    'Сохраняю…',
+    false
+  );
+
+
+  const {
+    error
+  } =
+  await db
+  .from('daily_logs')
+  .upsert(
+    toRow(log),
+    {
+      onConflict:
+      'user_id,log_date'
+    }
+  );
+
+
+  if(error){
+
+    console.error(error);
+
+    markPending(
+      log.date
+    );
+
+    cloudStatus(
+      'Сохранено локально',
+      false
+    );
+
+    return false;
+
+  }
+
+
+  cloudStatus(
+    'Облако подключено',
+    true
+  );
+
+  return true;
+
+}
+
+
+function tab(
+  id,
+  btn
+){
+
+  document
+  .querySelectorAll(
+    '.screen'
+  )
+  .forEach(
+    x =>
+    x.classList.remove(
+      'active'
+    )
+  );
+
+
+  $(id)
+  .classList
+  .add('active');
+
+
+  document
+  .querySelectorAll(
+    'nav button'
+  )
+  .forEach(
+    x =>
+    x.classList.remove(
+      'active'
+    )
+  );
+
+
+  btn
+  .classList
+  .add('active');
+
+
+  render();
+
+}
+
 
 function openForm(){
 
- let l=todayLog()||{
-  pushups:[0,0,0,0],
-  squats:[0,0,0,0]
- };
+  const l =
+  todayLog() || {
+    pushups:[0,0,0,0],
+    squats:[0,0,0,0]
+  };
 
- weight.value=l.weight||"";
- calories.value=l.calories||"";
- protein.value=l.protein||"";
- drinks.value=l.drinks||"";
- water.value=l.water||"";
- cardio.value=l.cardio||"";
 
- [p1,p2,p3,p4].forEach((x,i)=>{
-  x.value=l.pushups?.[i]||"";
- });
+  $('weight').value =
+  l.weight || '';
 
- [s1,s2,s3,s4].forEach((x,i)=>{
-  x.value=l.squats?.[i]||"";
- });
+  $('calories').value =
+  l.calories || '';
 
- mood.value=l.mood||"";
- energy.value=l.energy||"";
- note.value=l.note||"";
+  $('protein').value =
+  l.protein || '';
 
- formDialog.showModal();
+  $('drinks').value =
+  l.drinks || '';
+
+  $('water').value =
+  l.water || '';
+
+  $('cardio').value =
+  l.cardio || '';
+
+
+  [
+    'p1',
+    'p2',
+    'p3',
+    'p4'
+  ]
+  .forEach(
+    (id,i) =>
+    $(id).value =
+    l.pushups?.[i] || ''
+  );
+
+
+  [
+    's1',
+    's2',
+    's3',
+    's4'
+  ]
+  .forEach(
+    (id,i) =>
+    $(id).value =
+    l.squats?.[i] || ''
+  );
+
+
+  $('mood').value =
+  l.mood || '';
+
+  $('energy').value =
+  l.energy || '';
+
+  $('note').value =
+  l.note || '';
+
+
+  $('formDialog')
+  .showModal();
 
 }
 
-dayForm.onsubmit=e=>{
 
- e.preventDefault();
+$('dayForm')
+.addEventListener(
+  'submit',
+  async e => {
 
- let log={
-  date:today(),
-  weight:+weight.value||null,
-  calories:+calories.value||0,
-  protein:+protein.value||0,
-  drinks:+drinks.value||0,
-  water:+water.value||0,
-  cardio:+cardio.value||0,
+    e.preventDefault();
 
-  pushups:[
-   +p1.value||0,
-   +p2.value||0,
-   +p3.value||0,
-   +p4.value||0
-  ],
 
-  squats:[
-   +s1.value||0,
-   +s2.value||0,
-   +s3.value||0,
-   +s4.value||0
-  ],
+    const log = {
 
-  mood:+mood.value||0,
-  energy:+energy.value||0,
-  note:note.value
- };
+      date:
+      localDate(),
 
- let i=logs.findIndex(x=>x.date===log.date);
+      weight:
+      +$('weight').value ||
+      null,
 
- if(i>=0) logs[i]=log;
- else logs.push(log);
+      calories:
+      +$('calories').value ||
+      0,
 
- localStorage.setItem("solo_logs",JSON.stringify(logs));
+      protein:
+      +$('protein').value ||
+      0,
 
- formDialog.close();
+      drinks:
+      +$('drinks').value ||
+      0,
 
- render();
+      water:
+      +$('water').value ||
+      0,
 
-};
+      cardio:
+      +$('cardio').value ||
+      0,
+
+      pushups:
+      [
+        'p1',
+        'p2',
+        'p3',
+        'p4'
+      ]
+      .map(
+        id =>
+        +$(id).value || 0
+      ),
+
+      squats:
+      [
+        's1',
+        's2',
+        's3',
+        's4'
+      ]
+      .map(
+        id =>
+        +$(id).value || 0
+      ),
+
+      mood:
+      +$('mood').value ||
+      0,
+
+      energy:
+      +$('energy').value ||
+      0,
+
+      note:
+      $('note')
+      .value
+      .trim()
+
+    };
+
+
+    const i =
+    logs.findIndex(
+      x =>
+      x.date === log.date
+    );
+
+
+    if(i >= 0){
+
+      logs[i] = log;
+
+    }else{
+
+      logs.push(log);
+
+    }
+
+
+    saveCache();
+
+    render();
+
+
+    $('formDialog')
+    .close();
+
+
+    await saveRemote(log);
+
+  }
+);
+
+
+function planForToday(){
+
+  const day =
+  new Date().getDay();
+
+
+  const plans = {
+
+    1:{
+      name:'Силовая',
+      push:true,
+      squat:true,
+      cardio:'15–20 мин'
+    },
+
+    2:{
+      name:'Кардио',
+      push:false,
+      squat:false,
+      cardio:'20–30 мин'
+    },
+
+    3:{
+      name:'Силовая',
+      push:true,
+      squat:true,
+      cardio:'15–20 мин'
+    },
+
+    4:{
+      name:'Кардио',
+      push:false,
+      squat:false,
+      cardio:'20–30 мин'
+    },
+
+    5:{
+      name:'Силовая',
+      push:true,
+      squat:true,
+      cardio:'15–20 мин'
+    },
+
+    6:{
+      name:'Кардио опц.',
+      push:false,
+      squat:false,
+      cardio:'20–40 мин'
+    },
+
+    0:{
+      name:'Отдых',
+      push:false,
+      squat:false,
+      cardio:'—'
+    }
+
+  };
+
+
+  return plans[day];
+
+}
+
 
 function renderToday(){
 
- let l=todayLog();
- let w=currentWeight();
+  const l =
+  todayLog();
 
- weightMain.innerHTML=w.toFixed(1)+' <span>кг</span>';
+  const w =
+  currentWeight();
 
- let d=w-START;
+  const d =
+  w - START;
 
- deltaMain.innerText=
- logs.length
- ?(d>0?"+":"")+d.toFixed(1)+" кг от старта"
- :"Стартовая точка";
+  const p =
+  planForToday();
 
- remain.innerText=
- Math.max(0,w-GOAL).toFixed(1);
 
- calMetric.innerText=
- (l?.calories||0)+" / "+CAL_GOAL;
+  $('weightMain')
+  .innerHTML =
+  w.toFixed(1) +
+  ' <span>кг</span>';
 
- proteinMetric.innerText=
- (l?.protein||0)+" / "+PROTEIN_GOAL+" г";
 
- drinkMetric.innerText=
- (l?.drinks||0)+" / 2";
+  $('deltaMain')
+  .textContent =
+  logs.length
+  ?
+  `${d>0?'+':''}${d.toFixed(1)} кг от старта`
+  :
+  'Стартовая точка';
 
- cardioMetric.innerText=
- (l?.cardio||0)+" мин";
 
- pushToday.innerText=
- sum(l?.pushups)||"—";
+  $('remain')
+  .textContent =
+  Math.max(
+    0,
+    w-GOAL
+  )
+  .toFixed(1);
 
- squatToday.innerText=
- sum(l?.squats)||"—";
 
- cardioToday.innerText=
- l?.cardio ? l.cardio+" мин":"—";
+  $('calMetric')
+  .textContent =
+  `${l?.calories||0} / ${CAL_GOAL}`;
+
+
+  $('proteinMetric')
+  .textContent =
+  `${l?.protein||0} / ${PROTEIN_GOAL} г`;
+
+
+  $('drinkMetric')
+  .textContent =
+  `${l?.drinks||0} / 2`;
+
+
+  $('cardioMetric')
+  .textContent =
+  `${l?.cardio||0} мин`;
+
+
+  $('pushToday')
+  .textContent =
+  sum(l?.pushups)
+  ||
+  (
+    p.push
+    ? 'план'
+    : '—'
+  );
+
+
+  $('squatToday')
+  .textContent =
+  sum(l?.squats)
+  ||
+  (
+    p.squat
+    ? 'план'
+    : '—'
+  );
+
+
+  $('cardioToday')
+  .textContent =
+  l?.cardio
+  ?
+  `${l.cardio} мин`
+  :
+  p.cardio;
+
+
+  $('dayBadge')
+  .textContent =
+  p.name;
 
 }
+
 
 function renderProgress(){
 
- let d=[...logs]
- .sort((a,b)=>a.date.localeCompare(b.date))
- .slice(-7);
+  const d =
+  [...logs]
+  .sort(
+    (a,b) =>
+    a.date.localeCompare(
+      b.date
+    )
+  )
+  .slice(-7);
 
- let weights=d.filter(x=>x.weight);
 
- if(weights.length>1){
+  const weights =
+  d.filter(
+    x => x.weight
+  );
 
-  let change=
-  weights.at(-1).weight-
-  weights[0].weight;
 
-  weekDelta.innerText=
-  (change>0?"+":"")+
-  change.toFixed(1)+" кг";
+  if(
+    weights.length > 1
+  ){
 
- }else weekDelta.innerText="—";
+    const change =
+    weights.at(-1).weight -
+    weights[0].weight;
 
- let c=d.filter(x=>x.calories);
 
- avgCal.innerText=
- c.length
- ?Math.round(
-   c.reduce((a,b)=>a+b.calories,0)/c.length
- )
- :"—";
+    $('weekDelta')
+    .textContent =
+    `${change>0?'+':''}${change.toFixed(1)} кг`;
 
- trainDays.innerText=
- d.filter(x=>
-  sum(x.pushups)||
-  sum(x.squats)||
-  x.cardio
- ).length;
+  }else{
 
- totalCardio.innerText=
- sum(d.map(x=>x.cardio))+" мин";
+    $('weekDelta')
+    .textContent =
+    '—';
 
- bestPush.innerText=
- Math.max(0,...d.map(x=>sum(x.pushups)));
+  }
 
- bestSquat.innerText=
- Math.max(0,...d.map(x=>sum(x.squats)));
+
+  const c =
+  d.filter(
+    x => x.calories
+  );
+
+
+  $('avgCal')
+  .textContent =
+  c.length
+  ?
+  Math.round(
+    c.reduce(
+      (a,b) =>
+      a+b.calories,
+      0
+    )
+    /
+    c.length
+  )
+  :
+  '—';
+
+
+  $('trainDays')
+  .textContent =
+  d.filter(
+    x =>
+    sum(x.pushups) ||
+    sum(x.squats) ||
+    x.cardio
+  )
+  .length;
+
+
+  $('totalCardio')
+  .textContent =
+  `${sum(d.map(x=>x.cardio))} мин`;
+
+
+  $('bestPush')
+  .textContent =
+  Math.max(
+    0,
+    ...d.map(
+      x => sum(x.pushups)
+    )
+  );
+
+
+  $('bestSquat')
+  .textContent =
+  Math.max(
+    0,
+    ...d.map(
+      x => sum(x.squats)
+    )
+  );
 
 }
+
 
 function renderHistory(){
 
- if(!logs.length){
+  if(!logs.length){
 
-  historyList.innerHTML=
-  '<div class="muted">Пока нет записей.</div>';
+    $('historyList')
+    .innerHTML =
+    '<div class="muted">Пока нет записей.</div>';
 
-  return;
+    return;
 
- }
+  }
 
- historyList.innerHTML=
- [...logs]
- .sort((a,b)=>b.date.localeCompare(a.date))
- .map(x=>`
 
- <div class="card history-item">
+  $('historyList')
+  .innerHTML =
+  [...logs]
+  .sort(
+    (a,b) =>
+    b.date.localeCompare(
+      a.date
+    )
+  )
+  .map(
+    x => `
 
-  <div class="row">
+    <div class="card history-item">
 
-   <b>
-   ${new Date(
-    x.date+"T12:00"
-   ).toLocaleDateString(
-    "ru-RU",
-    {day:"2-digit",month:"short"}
-   )}
-   </b>
+      <div class="row">
 
-   <b>
-   ${x.weight?x.weight.toFixed(1)+" кг":"—"}
-   </b>
+        <b>
+        ${
+          new Date(
+            x.date +
+            'T12:00'
+          )
+          .toLocaleDateString(
+            'ru-RU',
+            {
+              day:'2-digit',
+              month:'short'
+            }
+          )
+        }
+        </b>
 
-  </div>
+        <b>
+        ${
+          x.weight
+          ?
+          Number(
+            x.weight
+          )
+          .toFixed(1)
+          +
+          ' кг'
+          :
+          '—'
+        }
+        </b>
 
-  <div class="stats">
+      </div>
 
-   <div>
-    <small>Ккал</small>
-    <b>${x.calories}</b>
-   </div>
 
-   <div>
-    <small>Отжимания</small>
-    <b>${sum(x.pushups)}</b>
-   </div>
+      <div class="stats">
 
-   <div>
-    <small>Приседания</small>
-    <b>${sum(x.squats)}</b>
-   </div>
+        <div>
+          <small>Ккал</small>
+          <b>${x.calories}</b>
+        </div>
 
-  </div>
+        <div>
+          <small>Отжимания</small>
+          <b>${sum(x.pushups)}</b>
+        </div>
 
- </div>
+        <div>
+          <small>Приседания</small>
+          <b>${sum(x.squats)}</b>
+        </div>
 
- `).join("");
+      </div>
+
+    </div>
+
+    `
+  )
+  .join('');
 
 }
 
+
 function makeReport(){
 
- let d=[...logs]
- .sort((a,b)=>a.date.localeCompare(b.date))
- .slice(-7);
+  const d =
+  [...logs]
+  .sort(
+    (a,b) =>
+    a.date.localeCompare(
+      b.date
+    )
+  )
+  .slice(-7);
 
- if(!d.length){
 
-  report.innerText="Пока нет данных.";
-  reportBox.style.display="block";
-  return;
+  if(!d.length){
 
- }
+    $('report')
+    .textContent =
+    'Пока нет данных.';
 
- let weights=d.filter(x=>x.weight);
+    $('reportBox')
+    .style
+    .display =
+    'block';
 
- let first=weights[0]?.weight;
- let last=weights.at(-1)?.weight;
+    return;
 
- let c=d.filter(x=>x.calories);
+  }
 
- let avg=
- c.length
- ?Math.round(
-   c.reduce((a,b)=>a+b.calories,0)/c.length
- )
- :"—";
 
- report.innerText=
+  const weights =
+  d.filter(
+    x => x.weight
+  );
+
+
+  const first =
+  weights[0]?.weight;
+
+
+  const last =
+  weights.at(-1)?.weight;
+
+
+  const c =
+  d.filter(
+    x => x.calories
+  );
+
+
+  const avg =
+  c.length
+  ?
+  Math.round(
+    c.reduce(
+      (a,b) =>
+      a+b.calories,
+      0
+    )
+    /
+    c.length
+  )
+  :
+  '—';
+
+
+  const energy =
+  d.filter(
+    x => x.energy
+  );
+
+
+  const avgEnergy =
+  energy.length
+  ?
+  (
+    sum(
+      energy.map(
+        x => x.energy
+      )
+    )
+    /
+    energy.length
+  )
+  .toFixed(1)
+  :
+  '—';
+
+
+  $('report')
+  .textContent =
 
 `SOLO — отчёт за последние ${d.length} дней
 
 Вес:
-${first||"—"} → ${last||"—"} кг
+${first||'—'} → ${last||'—'} кг
 
 Средние калории:
 ${avg} ккал
@@ -849,38 +2315,129 @@ ${Math.max(0,...d.map(x=>sum(x.pushups)))}
 ${Math.max(0,...d.map(x=>sum(x.squats)))}
 
 Средняя энергия:
-${(
- sum(d.map(x=>x.energy))/
- d.length
-).toFixed(1)}/5
+${avgEnergy}/5
 
 Проанализируй мой прогресс.
 Скажи, нужно ли менять калории,
 кардио или тренировочную нагрузку.`;
 
- reportBox.style.display="block";
+
+  $('reportBox')
+  .style
+  .display =
+  'block';
 
 }
+
 
 async function copyReport(){
 
- await navigator.clipboard.writeText(
-  report.innerText
- );
+  try{
 
- alert("Отчёт скопирован");
+    await navigator
+    .clipboard
+    .writeText(
+      $('report')
+      .textContent
+    );
+
+    alert(
+      'Отчёт скопирован'
+    );
+
+  }catch{
+
+    alert(
+      'Не удалось скопировать'
+    );
+
+  }
 
 }
+
+
+async function shareReport(){
+
+  const text =
+  $('report')
+  .textContent;
+
+
+  if(navigator.share){
+
+    try{
+
+      await navigator.share({
+        title:
+        'SOLO — отчёт',
+
+        text
+      });
+
+    }catch{}
+
+  }else{
+
+    copyReport();
+
+  }
+
+}
+
 
 function render(){
 
- renderToday();
- renderProgress();
- renderHistory();
+  renderToday();
+
+  renderProgress();
+
+  renderHistory();
 
 }
 
-render();
+
+async function init(){
+
+  render();
+
+
+  const {
+    data:{
+      session
+    }
+  } =
+  await db.auth
+  .getSession();
+
+
+  if(
+    session?.user
+  ){
+
+    currentUser =
+    session.user;
+
+    await afterLogin();
+
+  }else{
+
+    $('authGate')
+    .classList
+    .remove(
+      'hidden'
+    );
+
+    cloudStatus(
+      'Не выполнен вход',
+      false
+    );
+
+  }
+
+}
+
+
+init();
 
 </script>
 
